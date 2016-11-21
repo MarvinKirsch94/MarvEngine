@@ -23,9 +23,15 @@ public class Light {
                 if(distance < radius) {
                     lm[x + y * diameter] = Pixel.getColorPower(color, 1 - distance / radius);
                 } else {
-                    lm[x + y * diameter] = 0;
+                    lm[x + y * diameter] = 0xff000000;
                 }
             }
         }
+    }
+
+    public int getLightValue(int x, int y) {
+        if(x < 0 || x >= diameter || y < 0 || y >= diameter)
+            return 0xff000000;
+        return lm[x + y * diameter];
     }
 }
