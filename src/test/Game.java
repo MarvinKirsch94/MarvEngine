@@ -36,7 +36,7 @@ public class Game extends AbstractGame {
     float x = 0;
 
     public Game() {
-        image2.shadowType = ShadowType.HALF;
+        image2.shadowType = ShadowType.FADE;
     }
 
     @Override

@@ -21,10 +21,10 @@ public class GameContainer implements Runnable {
     private double frameCap = 1.0 / 60.0;
     private boolean isRunning = false;
 
-    private boolean lightEnable = false;
-    private boolean dynamicLights = false;
-    private boolean clearScreen = false;
-    private boolean debug = false;
+    private boolean lightEnable = true;//false;
+    private boolean dynamicLights = true;//false;
+    private boolean clearScreen = true;//false;
+    private boolean debug = true;//false;
 
     public GameContainer(AbstractGame game) {
         this.game = game;
