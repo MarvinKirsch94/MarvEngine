@@ -6,6 +6,7 @@ import com.marvinkirsch.core.Input;
 import com.marvinkirsch.core.Renderer;
 import com.marvinkirsch.core.fx.Image;
 import com.marvinkirsch.core.fx.Light;
+import com.marvinkirsch.core.fx.ShadowType;
 import com.marvinkirsch.core.fx.SoundClip;
 
 import java.awt.event.KeyEvent;
@@ -17,9 +18,10 @@ import java.awt.event.KeyEvent;
 public class Game extends AbstractGame {
 
     private Image image = new Image("/test.png");
+    private Image image2 = new Image("/test2.png");
 
     private Light light0 = new Light(0xffff0000, 60);
-    private Light light1 = new Light(0xff00ff00, 60);
+    private Light light1 = new Light(0xffffffff, 200);
     private Light light2 = new Light(0xff0000ff, 60);
     private SoundClip clip = new SoundClip("/coin pickup.wav");
 
@@ -32,6 +34,10 @@ public class Game extends AbstractGame {
     }
 
     float x = 0;
+
+    public Game() {
+        image2.shadowType = ShadowType.HALF;
+    }
 
     @Override
     public void update(GameContainer gc, float dt) {
@@ -52,9 +58,8 @@ public class Game extends AbstractGame {
     @Override
     public void render(GameContainer gc, Renderer r) {
 
+        r.drawLight(light1, Input.getMouseX(), Input.getMouseY());
         r.drawImage(image, 0, 0);
-        r.drawLight(light0, Input.getMouseX(), Input.getMouseY());
-        r.drawLight(light1, 50, 50);
-        r.drawLight(light2, 75, 50);
+        r.drawImage(image2, 0, 0);
     }
 }

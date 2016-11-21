@@ -3,12 +3,15 @@ package com.marvinkirsch.core;
 import com.marvinkirsch.core.fx.*;
 
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
 
 /**
  * @author Marvin Kirsch
  * @version 0.0
  */
 public class Renderer {
+
+    private GameContainer gc;
 
     private int width, height;
     private int[] pixels;
@@ -17,7 +20,10 @@ public class Renderer {
     private Font font = Font.STANDARD;
     private int ambientLight = Pixel.getColor(1, 0.1f, 0.1f, 0.1f);
 
+    private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();
+
     public Renderer(GameContainer gc) {
+        this.gc = gc;
         width = gc.getWidth();
         height = gc.getHeight();
         pixels = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData();
@@ -38,6 +44,12 @@ public class Renderer {
             return;
 
         lm[x + y * width] = Pixel.getMax(color, lm[x + y * width]);
+    }
+
+    public ShadowType getLightBlock(int x, int y) {
+        if(x < 0 || x >= width || y < 0 || y >= height)
+            return ShadowType.TOTAL;
+        return lb[x + y * width];
     }
 
     public void drawString(String text, int color, int offX, int offY) {
@@ -78,6 +90,14 @@ public class Renderer {
         }
     }
 
+    public void drawLightArray() {
+        for(LightRequest lr : lightRequests) {
+            drawLightRequest(lr.light, lr.x, lr.y);
+        }
+
+        lightRequests.clear();
+    }
+
     public void drawImage(Image image, int offX, int offY) {
         for(int x = 0; x < image.width; x++) {
             for(int y = 0; y < image.height; y++) {
@@ -95,6 +115,10 @@ public class Renderer {
     }
 
     public void drawLight(Light light, int offX, int offY) {
+        lightRequests.add(new LightRequest(light, offX, offY));
+    }
+
+    private void drawLightRequest(Light light, int offX, int offY) {
         for(int i = 0; i <= light.diameter; i++){
             drawLightLine(light.radius, light.radius, i, 0, light, offX, offY);
             drawLightLine(light.radius, light.radius, i, light.diameter, light, offX, offY);
@@ -113,16 +137,29 @@ public class Renderer {
         int err = dx - dy;
         int e2;
 
+        float power = 1.0f;
+        boolean hit = false;
+
         while(true) {
             if(light.getLightValue(x0, y0) == 0xff000000) break;
 
             int screenX = x0 - light.radius + offX;
             int screenY = y0 - light.radius + offY;
 
-            setLightMap(screenX, screenY, light.getLightValue(x0, y0));
-
+            if(power == 1) {
+                setLightMap(screenX, screenY, light.getLightValue(x0, y0));
+            } else {
+                setLightMap(screenX, screenY, Pixel.getColorPower(light.getLightValue(x0, y0), power));
+            }
             if(x0 == x1 && y0 == y1) break;
-            if(lb[screenX + screenY * width] == ShadowType.TOTAL) break;
+            if(getLightBlock(screenX, screenY) == ShadowType.TOTAL) break;
+            if(getLightBlock(screenX, screenY) == ShadowType.FADE) power -= 0.05f;
+            if(getLightBlock(screenX, screenY) == ShadowType.HALF && !hit) {
+                hit = true;
+                power /= 2;
+            }
+            if(getLightBlock(screenX, screenY) == ShadowType.NONE && hit) hit = false;
+            if(power <= 0.1f) break;
 
             e2 = 2 * err;
 

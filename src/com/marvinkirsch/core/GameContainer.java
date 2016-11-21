@@ -1,6 +1,7 @@
 package com.marvinkirsch.core;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * @author Marvin Kirsch
@@ -17,15 +18,20 @@ public class GameContainer implements Runnable {
     private int width = 320, height = 240;
     private float scale = 2.0f;
     private String title = "MarvEngine v1.0 by Marvin Kirsch";
-    private double frameCap = 1.0/ 60.0;
+    private double frameCap = 1.0 / 60.0;
     private boolean isRunning = false;
+
+    private boolean lightEnable = false;
+    private boolean dynamicLights = false;
+    private boolean clearScreen = false;
+    private boolean debug = false;
 
     public GameContainer(AbstractGame game) {
         this.game = game;
     }
 
     public void start() {
-        if(isRunning)
+        if (isRunning)
             return;
 
         window = new Window(this);
@@ -37,7 +43,7 @@ public class GameContainer implements Runnable {
     }
 
     public void stop() {
-        if(!isRunning)
+        if (!isRunning)
             return;
 
         isRunning = false;
@@ -54,7 +60,7 @@ public class GameContainer implements Runnable {
         int frames = 0;
         int fps = 0;
 
-        while(isRunning) {
+        while (isRunning) {
             boolean render = true;
 
             firstTime = System.nanoTime() / 1000000000.0;
@@ -64,24 +70,30 @@ public class GameContainer implements Runnable {
             unprocessedTime += passedTime;
             frameTime += passedTime;
 
-            while(unprocessedTime >= frameCap) {
-                game.update(this, (float)frameCap);
+            while (unprocessedTime >= frameCap) {
+                if(Input.isKeyPressed(KeyEvent.VK_F2)) debug = !debug;
+
+                game.update(this, (float) frameCap);
                 input.update();
                 unprocessedTime -= frameCap;
                 render = true;
 
-                if(frameTime >= 1) {
+                if (frameTime >= 1) {
                     frameTime = 0;
                     fps = frames;
                     frames = 0;
                 }
             }
 
-            if(render) {
-                renderer.clear();
+            if (render) {
+                if (clearScreen) renderer.clear();
+
                 game.render(this, renderer);
-                renderer.combineMaps();
-                renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0);
+
+                if (dynamicLights) renderer.drawLightArray();
+                if(lightEnable || dynamicLights) renderer.combineMaps();
+                if(debug) renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0);
+
                 window.update();
                 frames++;
             } else {
@@ -137,5 +149,13 @@ public class GameContainer implements Runnable {
 
     public void setWindow(Window window) {
         this.window = window;
+    }
+
+    public boolean isDynamicLights() {
+        return dynamicLights;
+    }
+
+    public void setDynamicLights(boolean dynamicLights) {
+        this.dynamicLights = dynamicLights;
     }
 }
