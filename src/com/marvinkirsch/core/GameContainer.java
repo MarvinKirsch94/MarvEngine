@@ -1,6 +1,5 @@
 package com.marvinkirsch.core;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
@@ -17,14 +16,15 @@ public class GameContainer implements Runnable {
 
     private int width = 320, height = 240;
     private float scale = 2.0f;
-    private String title = "MarvEngine v1.0 by Marvin Kirsch";
+    private String title = "MarvEngine v0.0 by Marvin Kirsch";
     private double frameCap = 1.0 / 60.0;
     private boolean isRunning = false;
 
-    private boolean lightEnable = true;//false;
-    private boolean dynamicLights = true;//false;
-    private boolean clearScreen = true;//false;
-    private boolean debug = true;//false;
+    private boolean lockFrameRate = false;
+    private boolean lightEnable = false;
+    private boolean dynamicLights = false;
+    private boolean clearScreen = false;
+    private boolean debug = false;
 
     public GameContainer(AbstractGame game) {
         this.game = game;
@@ -61,7 +61,7 @@ public class GameContainer implements Runnable {
         int fps = 0;
 
         while (isRunning) {
-            boolean render = true;
+            boolean render = !lockFrameRate;
 
             firstTime = System.nanoTime() / 1000000000.0;
             passedTime = firstTime - lastTime;
@@ -71,7 +71,7 @@ public class GameContainer implements Runnable {
             frameTime += passedTime;
 
             while (unprocessedTime >= frameCap) {
-                if(Input.isKeyPressed(KeyEvent.VK_F2)) debug = !debug;
+                if (input.isKeyPressed(KeyEvent.VK_F2)) debug = !debug;
 
                 game.update(this, (float) frameCap);
                 input.update();
@@ -86,13 +86,19 @@ public class GameContainer implements Runnable {
             }
 
             if (render) {
+
                 if (clearScreen) renderer.clear();
 
                 game.render(this, renderer);
 
-                if (dynamicLights) renderer.drawLightArray();
-                if(lightEnable || dynamicLights) renderer.combineMaps();
-                if(debug) renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0);
+                if (lightEnable || dynamicLights) {
+                    renderer.drawLightArray();
+                    renderer.flushMaps();
+                }
+
+                renderer.setTranslate(false);
+
+                if (debug) renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0);
 
                 window.update();
                 frames++;
@@ -107,8 +113,36 @@ public class GameContainer implements Runnable {
         cleanUp();
     }
 
+    public AbstractGame getGame() {
+        return game;
+    }
+
+    public void setGame(AbstractGame game) {
+        this.game = game;
+    }
+
+    public boolean isLightEnable() {
+        return lightEnable;
+    }
+
+    public void setLightEnable(boolean lightEnable) {
+        this.lightEnable = lightEnable;
+    }
+
+    public boolean isClearScreen() {
+        return clearScreen;
+    }
+
+    public void setClearScreen(boolean clearScreen) {
+        this.clearScreen = clearScreen;
+    }
+
     private void cleanUp() {
         window.cleanUp();
+    }
+
+    public void setFrameCap(int number) {
+        frameCap = 1.0f / number;
     }
 
     public int getWidth() {
@@ -157,5 +191,9 @@ public class GameContainer implements Runnable {
 
     public void setDynamicLights(boolean dynamicLights) {
         this.dynamicLights = dynamicLights;
+    }
+
+    public Input getInput() {
+        return input;
     }
 }

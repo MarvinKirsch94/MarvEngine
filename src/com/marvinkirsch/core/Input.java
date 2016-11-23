@@ -10,13 +10,13 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
     private GameContainer gc;
 
-    private static boolean[] keys = new boolean[256];
-    private static boolean[] keysLast = new boolean[256];
+    private boolean[] keys = new boolean[256];
+    private boolean[] keysLast = new boolean[256];
 
-    private static boolean[] buttons = new boolean[256];
-    private static boolean[] buttonsLast = new boolean[256];
+    private boolean[] buttons = new boolean[256];
+    private boolean[] buttonsLast = new boolean[256];
 
-    private static int mouseX, mouseY;
+    private int mouseX, mouseY;
 
     public Input(GameContainer gc) {
         this.gc = gc;
@@ -30,27 +30,27 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         buttons = buttons.clone();
     }
 
-    public static boolean isKey(int keyCode) {
+    public boolean isKey(int keyCode) {
         return keys[keyCode];
     }
 
-    public static boolean isKeyPressed(int keyCode) {
+    public boolean isKeyPressed(int keyCode) {
         return keys[keyCode] && !keysLast[keyCode];
     }
 
-    public static boolean isKeyReleased(int keyCode) {
+    public boolean isKeyReleased(int keyCode) {
         return !keys[keyCode] && keysLast[keyCode];
     }
 
-    public static boolean isButton(int button) {
+    public boolean isButton(int button) {
         return buttons[button];
     }
 
-    public static boolean isButtonPressed(int button) {
+    public boolean isButtonPressed(int button) {
         return buttons[button] && !buttonsLast[button];
     }
 
-    public static boolean isButtonReleased(int button) {
+    public boolean isButtonReleased(int button) {
         return !buttons[button] && buttonsLast[button];
     }
 
@@ -106,19 +106,19 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
         mouseY = (int)(e.getY() / gc.getScale());
     }
 
-    public static int getMouseX() {
+    public int getMouseX() {
         return mouseX;
     }
 
-    public static void setMouseX(int mouseX) {
-        Input.mouseX = mouseX;
+    public void setMouseX(int mouseX) {
+        this.mouseX = mouseX;
     }
 
-    public static int getMouseY() {
+    public int getMouseY() {
         return mouseY;
     }
 
-    public static void setMouseY(int mouseY) {
-        Input.mouseY = mouseY;
+    public void setMouseY(int mouseY) {
+        this.mouseY = mouseY;
     }
 }
