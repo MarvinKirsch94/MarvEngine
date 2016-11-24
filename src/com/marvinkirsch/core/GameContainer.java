@@ -1,5 +1,7 @@
 package com.marvinkirsch.core;
 
+import com.marvinkirsch.core.components.Physics;
+
 import java.awt.event.KeyEvent;
 
 /**
@@ -13,6 +15,7 @@ public class GameContainer implements Runnable {
     private Window window;
     private Renderer renderer;
     private Input input;
+    private Physics physics;
 
     private int width = 320, height = 240;
     private float scale = 2.0f;
@@ -37,6 +40,7 @@ public class GameContainer implements Runnable {
         window = new Window(this);
         renderer = new Renderer(this);
         input = new Input(this);
+        physics = new Physics();
 
         thread = new Thread(this);
         thread.run();
@@ -74,6 +78,7 @@ public class GameContainer implements Runnable {
                 if (input.isKeyPressed(KeyEvent.VK_F2)) debug = !debug;
 
                 game.update(this, (float) frameCap);
+                physics.update();
                 input.update();
                 unprocessedTime -= frameCap;
                 render = true;
@@ -195,5 +200,13 @@ public class GameContainer implements Runnable {
 
     public Input getInput() {
         return input;
+    }
+
+    public Physics getPhysics() {
+        return physics;
+    }
+
+    public void setPhysics(Physics physics) {
+        this.physics = physics;
     }
 }

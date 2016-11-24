@@ -9,12 +9,13 @@ import com.sun.glass.events.KeyEvent;
 /**
  * @author Marvin Kirsch
  * @version 0.0
- * created on 24.11.2016
+ *          created on 24.11.2016
  */
-public class Player extends GameObject {
+public class Enemy extends GameObject {
 
-    public Player(int x, int y) {
-        setTag("player");
+    private GameObject target = null;
+
+    public Enemy(int x, int y) {
         this.x = x;
         this.y = y;
         w = 16;
@@ -24,20 +25,16 @@ public class Player extends GameObject {
 
     @Override
     public void update(GameContainer gc, float dt) {
-        if(gc.getInput().isKey(KeyEvent.VK_W)) {
-            y -= (75 * dt);
-
-            if(y < 0) {
-                y = 0;
-            }
+        if(target == null) {
+           target = gc.getGame().peek().getManager().findObject("ball");
         }
 
-        if(gc.getInput().isKey(KeyEvent.VK_S)) {
-            y += (75 * dt);
+        if(target.getY() + target.getH() / 2 > y - 2) {
+            y += dt * 75;
+        }
 
-            if(y + h > gc.getHeight()) {
-                y = gc.getHeight() - h;
-            }
+        if(target.getY() + target.getH() / 2 < y + 2) {
+            y -= dt * 75;
         }
 
         updateComponents(gc, dt);

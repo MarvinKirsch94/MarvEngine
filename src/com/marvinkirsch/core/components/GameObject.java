@@ -32,7 +32,21 @@ public abstract class GameObject {
         }
     }
 
+    public abstract void componentEvent(String name, GameObject object);
+
     public abstract void dispose();
+
+    public void addComponent(Component c) {
+        components.add(c);
+    }
+
+    public void removeComponent(String tag) {
+        for(int i = 0; i < components.size(); i++) {
+            if(components.get(i).getTag().equalsIgnoreCase(tag)) {
+                components.remove(i);
+            }
+        }
+    }
 
     public String getTag() {
         return tag;

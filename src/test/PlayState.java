@@ -11,11 +11,11 @@ import com.marvinkirsch.core.components.State;
  */
 public class PlayState extends State {
 
-    private ObjectManager manager;
-
     public PlayState() {
         manager = new ObjectManager();
         manager.addObject(new Player(0, 0));
+        manager.addObject(new Ball(156, 116));
+        manager.addObject(new Enemy(304, 0));
     }
 
     @Override
