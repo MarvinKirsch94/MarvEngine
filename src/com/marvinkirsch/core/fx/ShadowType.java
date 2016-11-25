@@ -5,5 +5,5 @@ package com.marvinkirsch.core.fx;
  * @version 0.0
  */
 public enum ShadowType {
-    NONE, TOTAL, FADE, HALF;
+    NONE, TOTAL, FADE, HALF
 }
